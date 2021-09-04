@@ -32,7 +32,7 @@
   right: 0;
   padding: 0.5rem;
   display: grid;
-  grid-template-columns: 1fr 72px;
+  grid-template-columns: 1fr 82px;
   grid-gap: 1rem;
   border-top: 1px solid #eee;
 }

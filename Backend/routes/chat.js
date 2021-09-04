@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const {catchErrors} = require("../handlers/errorHandlers");
-const chatroomController = require("../controllers/chatroomController");
+const chatController = require("../controllers/chatController");
 
 const auth = require("../middlewares/auth");
 
-router.get("/chat_by_chatroom", auth, catchErrors(chatroomController.getAllChatrooms));
+router.get("/messages_by_chatroom", auth, catchErrors(chatController.getMessagesByChatroom));
 // router.post("/", auth, catchErrors(chatroomController.createChatroom));
 
 

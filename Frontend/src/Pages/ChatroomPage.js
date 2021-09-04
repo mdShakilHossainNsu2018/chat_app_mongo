@@ -1,5 +1,24 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
+import axios from "axios";
+// import {makeStyles} from "@material-ui/core/styles";
+import {TextField} from "@material-ui/core";
+import SendIcon from "@material-ui/icons/Send";
+import Fab from "@material-ui/core/Fab";
+
+
+// const useStyles = makeStyles((theme) => ({
+//   root: {
+//     display: 'flex',
+//     flexWrap: 'wrap',
+//   },
+//   textField: {
+//     marginLeft: theme.spacing(1),
+//     marginRight: theme.spacing(1),
+//     width: '25ch',
+//   },
+// }));
+
 
 const ChatroomPage = ({ match, socket }) => {
   const chatroomId = match.params.id;
@@ -18,12 +37,38 @@ const ChatroomPage = ({ match, socket }) => {
     }
   };
 
+  const getMessagesByChatroom = () => {
+    axios
+        .get("http://localhost:8000/chat/messages_by_chatroom", {
+          params: {
+            chatroomId: chatroomId,
+          },
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("CC_Token"),
+          },
+        })
+        .then((response) => {
+          setMessages(response.data);
+          console.log(response.data)
+        })
+        .catch((err) => {
+          console.error(err);
+          // setTimeout(getChatrooms, 3000);
+        });
+  };
+
+  React.useEffect(() => {
+    getMessagesByChatroom();
+    // eslint-disable-next-line
+  }, []);
+
   React.useEffect(() => {
     const token = localStorage.getItem("CC_Token");
     if (token) {
       const payload = JSON.parse(atob(token.split(".")[1]));
       setUserId(payload.id);
     }
+
     if (socket) {
       socket.on("newMessage", (message) => {
         const newMessages = [...messages, message];
@@ -49,7 +94,7 @@ const ChatroomPage = ({ match, socket }) => {
       }
     };
     //eslint-disable-next-line
-  }, []);
+  }, [socket]);
 
   return (
     <div className="chatroomPage">
@@ -60,10 +105,10 @@ const ChatroomPage = ({ match, socket }) => {
             <div key={i} className="message">
               <span
                 className={
-                  userId === message.userId ? "ownMessage" : "otherMessage"
+                  userId === message.user._id ? "ownMessage" : "otherMessage"
                 }
               >
-                {message.name}:
+                {message.user.name}:
               </span>{" "}
               {message.message}
             </div>
@@ -71,17 +116,32 @@ const ChatroomPage = ({ match, socket }) => {
         </div>
         <div className="chatroomActions">
           <div>
-            <input
-              type="text"
-              name="message"
-              placeholder="Say something!"
-              ref={messageRef}
+
+            <TextField
+                id="filled-full-width"
+                label="Say something!"
+                // style={{ margin: 8 }}
+                placeholder="eg: hi"
+                // helperText="Full width!"
+                fullWidth
+                // margin="normal"
+                inputRef={messageRef}
+
+                // variant="filled"
             />
+
+            {/*<input*/}
+            {/*  type="text"*/}
+            {/*  name="message"*/}
+            {/*  placeholder="Say something!"*/}
+            {/*  ref={messageRef}*/}
+            {/*/>*/}
           </div>
           <div>
-            <button className="join" onClick={sendMessage}>
-              Send
-            </button>
+            <Fab color="primary" onClick={sendMessage} aria-label="add"><SendIcon /></Fab>
+            {/*<button className="join" onClick={sendMessage}>*/}
+            {/*  Send*/}
+            {/*</button>*/}
           </div>
         </div>
       </div>

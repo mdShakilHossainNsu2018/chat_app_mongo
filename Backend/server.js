@@ -16,9 +16,11 @@ mongoose.connection.once("open", () => {
     console.log("mongoose started");
 });
 
+// import model
 require("./models/Chatroom");
 require("./models/User");
 require("./models/Message");
+require("./models/Profile");
 
 
 const app = require('./app');
@@ -71,19 +73,24 @@ io.on("connection", (socket) => {
     socket.on("chatroomMessage", async ({chatroomId, message}) => {
         if(message.trim().length > 0){
             const user = await User.findOne({_id: socket.userId});
-            // console.log(user)
+            // console.log("User:",user)
             const messageMongo = new Message({
                 chatroom: chatroomId,
                 user: socket.userId,
                 message
             });
+
+
             io.to(chatroomId).emit("newMessage", {
                 message,
                 name: user.name,
-                userId: socket.userId
+                user: user
             });
 
+            // console.log("chat roomid done initialized")
+
             await messageMongo.save();
+            // console.log("chat room finished")
         }
 
     })

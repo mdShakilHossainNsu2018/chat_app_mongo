@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const messageSchema = new mongoose.Schema({
     chatroom: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: "Chatroom is required!",
         ref: "Chatroom",
     },
@@ -11,10 +11,19 @@ const messageSchema = new mongoose.Schema({
         required: "Chatroom is required!",
         ref: "User",
     },
+    attachment: {
+        type: String,
+        default : null
+    },
+    image: {
+        type: String,
+        default : null
+    },
+
     message: {
         type: String,
         required: "Message is required!",
     },
-});
+}, { timestamps: {} });
 
 module.exports = mongoose.model("Message", messageSchema);
